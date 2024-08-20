@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>URL Shortener</h2>
+    <form id="urlForm">
+        <label for="url">Enter a long URL:</label>
+        <input type="text" id="url" name="url" required>
+        
+        <label for="customAlias">Custom Alias (Optional):</label>
+        <input type="text" id="customAlias" name="customAlias">
+        
+        <label for="ttl">TTL in seconds (Optional):</label>
+        <input type="number" id="ttl" name="ttl">
+
+        <button type="submit">Shorten URL</button>
+    </form>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        document.getElementById('urlForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const url = document.getElementById('url').value;
+            const customAlias = document.getElementById('customAlias').value;
+            const ttl = document.getElementById('ttl').value;
+
+            const response = await fetch('/api/shorten', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, customAlias, ttl })
+            });
+
+            const data = await response.json();
+            const resultDiv = document.getElementById('result');
+
+            if (response.ok) {
+                resultDiv.innerHTML = `<p>Shortened URL: <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a></p>`;
+            } else {
+                resultDiv.innerHTML = `<p>Error: ${data.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
